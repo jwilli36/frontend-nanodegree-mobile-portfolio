@@ -281,8 +281,8 @@ function getNoun(y) {
       return scifi_default;
   } 
 }
-
-var adjectives = ["dark", "color", "whimsical", "shiny", "noise", "apocalyptic", "insulting", "praise", "scientific"];  // types of adjectives for pizza titles
+             //changed noise to noisy
+var adjectives = ["dark", "color", "whimsical", "shiny", "noisy", "apocalyptic", "insulting", "praise", "scientific"];  // types of adjectives for pizza titles
 var nouns = ["animals", "everyday", "fantasy", "gross", "horror", "jewelry", "places", "scifi"];                        // types of nouns for pizza titles
 
 // Generates random numbers for getAdj and getNoun functions and returns a new pizza name
@@ -449,11 +449,16 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
+  //Moved the determineDX function call out of the loop
+  //Moved the newwidth calculation out of loop
+  //Optomized loop
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+      var dx = determineDX(document.querySelector(".randomPizzaContainer"), size);
+	  var newwidth = (document.querySelector(".randomPizzaContainer").offsetWidth + dx) + 'px';
+	  var elements = document.querySelectorAll(".randomPizzaContainer");
+    for (var i = elements.length; i--;){
+	
+      elements[i].style.width = newwidth;
     }
   }
 
@@ -498,14 +503,21 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
+//Optimized loops contained in updatePositions function and the onDOMContentLoaded event handler
+//Applied translateX() and translateZ(0) transform functions to sliding pizza elements
+//Moved scrollTop calculation outside of loop
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
 
   var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  var run = (document.body.scrollTop / 1250);
+  
+  for (var i = items.length; i--;) {
+    var phase = Math.sin( run + (i % 5));
+   // items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+   var left = -items[i].basicLeft + 1000 * phase + 'px';
+     items[i].style.transform = "translateX("+left+") translate(0)";
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -519,21 +531,43 @@ function updatePositions() {
 }
 
 // runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+window.addEventListener('scroll', function() {
+     window.requestAnimationFrame(updatePositions);
+	 
+	 });
 
 // Generates the sliding pizzas when the page loads.
+ //Reduced amount of sliding Pizza elements generated from 200 down to 31.
+ //Removed height and width styles from the generated pizza elements 
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  for (var i = 31; i--;) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
-    elem.style.height = "100px";
-    elem.style.width = "73.333px";
+    //elem.style.height = "100px";
+    //elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
   updatePositions();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
