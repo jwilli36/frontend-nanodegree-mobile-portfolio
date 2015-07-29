@@ -1,149 +1,48 @@
-After the 1st revision I try again.
+Website Optimization
 
-
-Optimization
-
-Index Page
-
-
-CSS
-
-Inlined all of the CSS into the head of the document and added the HTML media="print" external style sheet link for print styles.
-
-JS
-
-Added the HTML async attribute to all script tags .
-
-Images
-
-Resized images that were too large and compressed all images with the Caesium image compression tool.
-
-
-Browser Caching
-
-Leveraged browser caching by including an .htaccess file in the root of the website. 
-The file contains expires headers, which sets long expiration times for all CSS, JavaScript and images.
-*******Input Browser Caching file but couldnt get it to work properly********
-
-Sliding Pizzas
-
-// Changes the value for the size of the pizza above the slider
-//Changed QuerySelectorAll with getElementsByClassName improving performance for Dom Querying
-//recalculated modular
-//moved scroll outside of loop to avoid recalculation
-
-
-function updatePositions() {
-  frame++;
-  window.performance.mark("mark_start_frame");
-
-  var items = document.getElementsByClassName('.mover');
-  var runScroll = document.body.runScroll / 1250;
-  var runit = 0;
-  
-  for (var i = 0; i < items.length; i++) {
-	  
-	  runit <= 5 ? runit++ : runit=0;
-	  
-    var phase = Math.sin( runScroll + (runit));
-
-   items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
-
-  // User Timing API to the rescue again. Seriously, it's worth learning.
-  // Super easy to create custom metrics.
-  window.performance.mark("mark_end_frame");
-  window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
-  if (frame % 10 === 0) {
-    var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
-    logAverageFrame(timesToUpdatePosition);
-  }
-}
-
-// runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
-   
-
-// Generates the sliding pizzas when the page loads.
- //Reduced amount of sliding Pizza elements generated from 200 down to 31.
- //Removed height and width styles from the generated pizza elements 
-
-
-document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8;
-  var s = 256;
-  for (var i = 0; i < 31; i++) {
-    var elem = document.createElement('img');
-    elem.className = 'mover';
-    elem.src = "images/pizza.png";
-    //elem.style.height = "100px";
-    //elem.style.width = "73.333px";
-    elem.basicLeft = (i % cols) * s;
-    elem.style.top = (Math.floor(i / cols) * s) + 'px';
-	
-    document.querySelector("#movingPizzas1").appendChild(elem);
-  }
-  updatePositions();
-});
+Instructions
 
 
 
+A. To view the portfolio website download all the files and open index.html in your browser.
 
-  // User Timing API to the rescue again. Seriously, it's worth learning.
-  // Super easy to create custom metrics.
-  window.performance.mark("mark_end_frame");
-  window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
-  if (frame % 10 === 0) {
-    var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
-    logAverageFrame(timesToUpdatePosition);
-  }
-}
-Removed height and width styles from the generated pizza elements and resized the pizza image to 100 x 100 to prevent the browser from having to resize the images.
+B. To view the pizza website download all of the files and open views/pizza.html in your browser
 
-document.addEventListener('DOMContentLoaded', function() {
-  var cols = 8;
-  var s = 256;
-  for (var i = 35; i--;) {
-    var elem = document.createElement('img');
-    elem.className = 'mover';
-    elem.src = "../public/img/pizza-slider.png";
-    elem.basicLeft = (i % cols) * s;
-    elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
-  }
-  updatePositions();
-});
-Added the updatePositions function as a parameter to the window.requestAnimationFrame 
-method in the scroll event listener.
-
-window.addEventListener('scroll', updatePositions) 
-   
-});
-Resized Pizzas
-
-Tried to make these changes to resize the pizzas in under 5ms:
-
-Moved the determineDx function call inside the changePizzaSizes function out of the loop. 
-Moved the newwidth calculation inside the changePizzaSizes function out of the loop.
-Created a new variable to hold all of the .randomPizzaContainer elements in the 
-document and looped through the elements to apply the new width value.
-Optimized loop inside the changePizzaSizes function.
+C. Once you are at the pizza.html site you can slider to change the pizza sizes to Small/Medium/
+   or Large
 
 
-function changePizzaSizes(size) {
-  var randomPie = document.getElementsByClassName("randomPizzaContainer");
-  var dx = determineDx(randomPie[0], size);
-  var newwidth = (randomPie[0].offsetWidth + dx)+ 'px';
-	  
-    for (var i = 0; i < randomPie.length; i++) {
-	
-      randomPie[i].style.width = newwidth;
-    }
-  }
-  changePizzaSizes(size);
+
+Optimizations to index.html
+
+1. Inlined all of the CSS into the head of the document and added the HTML media="print" external 
+   style sheet link for print styles.
+
+2. Added the HTML async attribute to all script tags.
+
+3. Resized images that were too large and compressed all images with the Caesium image compression tool.
+
+4. Leveraged browser caching by including an .htaccess file in the root of the website.
  
+   ***The file contains expires headers, which sets long expiration times for all CSS, 
+      JavaScript and images.
 
 
+Optimizations to Main.js
+
+1. Modified the code to calculate the number of pizzas needed to fill the webpage based on browser inner dimensions.
+
+2.Moved the document.body request out of for loop in the changePizzaSizes and updatePositions 
+functions. This prevents the browser from having to render the page every time the loop 
+iterates.
+
+3.Changed all instances of querySelector to the more efficient getElementById and 
+  getElementByClassName depending on whether a class or id is needed.
+
+4. Used Background visibility: hidden on the .mover class.
+
+
+5. Used Gulp to minify css files.
 
 
 Critical Fold CSS
@@ -151,6 +50,12 @@ Critical Fold CSS
 CSS-Tricks: Authoring Critical Above-the-Fold CSS
 CSS Optimization
 
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for
+https://developer.mozilla.org/en-US/docs/Web/API/Window/innerHeight
+https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth
+
+http://api.jquery.com/innerheight/
+http://api.jquery.com/innerWidth/
 Google Developers: Optimize CSS Delivery
 Gift of Speed: Lazy Load CSS
 Gift of Speed: Inline CSS
